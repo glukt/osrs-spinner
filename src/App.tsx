@@ -342,17 +342,17 @@ function App() {
 
   if (showSplash) {
     return (
-      <div className={`fixed inset-0 bg-black flex flex-col items-center justify-center z-50 overflow-hidden transition-opacity duration-1000 ${isExitingSplash ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 overflow-hidden">
         {/* Spooky Background Elements */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-black to-black pointer-events-none"></div>
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]"></div>
 
         {/* Smoke Overlay during exit */}
         {isExitingSplash && (
-          <div className="absolute inset-0 z-50 bg-black/50 animate-smoke pointer-events-none"></div>
+          <div className="absolute inset-0 z-50 animate-smoke pointer-events-none"></div>
         )}
 
-        <div className="relative z-10 flex flex-col items-center gap-8">
+        <div className={`relative z-10 flex flex-col items-center gap-8 transition-opacity duration-1000 ${isExitingSplash ? 'opacity-0' : 'opacity-100'}`}>
           <h1 className="text-6xl md:text-8xl font-black text-red-600 tracking-widest uppercase animate-flicker font-serif" style={{ fontFamily: 'Cinzel, serif' }}>
             Let Fate Decide..
           </h1>
@@ -724,11 +724,14 @@ function App() {
                     <div className="grid md:grid-cols-2 gap-8">
                       {/* Achievements Column */}
                       <div>
-                        <div
-                          className="bg-osrs-bg border border-osrs-gold/30 p-4 rounded-lg mb-4 cursor-pointer hover:bg-osrs-gold/10 hover:border-osrs-gold transition-all group relative z-20 shadow-md"
-                          onClick={() => setShowAllAchievements(true)}
+                        <button
+                          className="w-full text-left bg-osrs-bg border border-osrs-gold/30 p-4 rounded-lg mb-4 cursor-pointer hover:bg-osrs-gold/10 hover:border-osrs-gold transition-all group relative z-50 shadow-md"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowAllAchievements(true);
+                          }}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between pointer-events-none">
                             <h3 className="text-lg font-bold text-osrs-gold flex items-center gap-2">
                               <Trophy size={18} /> Unlocked Achievements
                             </h3>
@@ -736,8 +739,8 @@ function App() {
                               View All
                             </span>
                           </div>
-                          <p className="text-xs text-osrs-accent mt-1">Click to view your progress and unlocked rewards.</p>
-                        </div>
+                          <p className="text-xs text-osrs-accent mt-1 pointer-events-none">Click to view your progress and unlocked rewards.</p>
+                        </button>
                         <div className="space-y-3">
                           {achievements.length === 0 && <p className="text-osrs-accent italic text-sm">No achievements unlocked yet.</p>}
                           {achievements.map(achId => {

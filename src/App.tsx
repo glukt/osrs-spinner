@@ -37,7 +37,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<string[]>([]); // Store IDs only
   const [streak, setStreak] = useState(0);
 
   const [isSpinning, setIsSpinning] = useState(false);
@@ -65,7 +65,23 @@ function App() {
     if (savedTasks) setTasks(JSON.parse(savedTasks));
     if (savedActiveTask) setActiveTask(JSON.parse(savedActiveTask));
     if (savedCompletedTasks) setCompletedTasks(JSON.parse(savedCompletedTasks));
-    if (savedAchievements) setAchievements(JSON.parse(savedAchievements));
+
+    // Fix crash: if achievements are objects (old format), reset them. If strings (new format), keep them.
+    if (savedAchievements) {
+      try {
+        const parsed = JSON.parse(savedAchievements);
+        if (parsed.length > 0 && typeof parsed[0] === 'object') {
+          console.warn("Old achievement format detected. Resetting to fix crash.");
+          setAchievements([]);
+          localStorage.removeItem('osrs-spinner-achievements');
+        } else {
+          setAchievements(parsed);
+        }
+      } catch (e) {
+        setAchievements([]);
+      }
+    }
+
     if (savedStreak) setStreak(parseInt(savedStreak));
   }, []);
 
@@ -96,14 +112,24 @@ function App() {
 
   // --- Logic ---
 
+  const getBossImage = (name: string) => {
+    const formatted = name.replace(/ /g, '_');
+    return `https://oldschool.runescape.wiki/images/${formatted}_chathead.png`;
+  };
+
+  const getSkillImage = (name: string) => {
+    const formatted = name.replace(/ /g, '_');
+    return `https://oldschool.runescape.wiki/images/${formatted}_icon_(detail).png`;
+  };
+
   const unlockAchievement = (id: string) => {
-    if (achievements.find(a => a.id === id)) return; // Already unlocked
+    if (achievements.includes(id)) return; // Already unlocked
 
     const def = ACHIEVEMENT_LIST.find(a => a.id === id);
     if (!def) return;
 
     const newAchievement: Achievement = { ...def, unlockedAt: Date.now() };
-    setAchievements(prev => [...prev, newAchievement]);
+    setAchievements(prev => [...prev, id]);
     setShowAchievementModal(newAchievement);
 
     // Confetti for achievement
@@ -282,11 +308,21 @@ function App() {
                 <h3 className="text-green-400 font-bold uppercase tracking-wider text-xs mb-2 flex items-center gap-2">
                   <Zap size={14} /> Current Objective
                 </h3>
-                <h2 className="text-2xl font-bold text-white mb-1">{activeTask.name}</h2>
-                <p className="text-3xl font-mono text-osrs-gold mb-4">
-                  {activeTask.currentGoal} <span className="text-lg text-osrs-accent">{activeTask.metric}</span>
-                  {activeTask.multiplier > 1 && <span className="text-sm text-red-400 ml-2">(x{activeTask.multiplier})</span>}
-                </p>
+                <div className="flex items-center gap-4 mb-4">
+                  {BOSSES.includes(activeTask.name) && (
+                    <img src={getBossImage(activeTask.name)} alt={activeTask.name} className="w-16 h-16 object-contain drop-shadow-lg" />
+                  )}
+                  {SKILLS.includes(activeTask.name) && (
+                    <img src={getSkillImage(activeTask.name)} alt={activeTask.name} className="w-12 h-12 object-contain drop-shadow-lg" />
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-1">{activeTask.name}</h2>
+                    <p className="text-3xl font-mono text-osrs-gold">
+                      {activeTask.currentGoal} <span className="text-lg text-osrs-accent">{activeTask.metric}</span>
+                      {activeTask.multiplier > 1 && <span className="text-sm text-red-400 ml-2">(x{activeTask.multiplier})</span>}
+                    </p>
+                  </div>
+                </div>
 
                 <div className="flex gap-3">
                   <button
@@ -435,6 +471,16 @@ function App() {
 
                 <div className="mb-6">
                   <h3 className="text-sm text-osrs-accent uppercase tracking-[0.2em] mb-3 font-bold">The wheel has spoken</h3>
+
+                  <div className="flex justify-center mb-4">
+                    {BOSSES.includes(winner.name) && (
+                      <img src={getBossImage(winner.name)} alt={winner.name} className="w-24 h-24 object-contain drop-shadow-2xl animate-in zoom-in duration-500" />
+                    )}
+                    {SKILLS.includes(winner.name) && (
+                      <img src={getSkillImage(winner.name)} alt={winner.name} className="w-20 h-20 object-contain drop-shadow-2xl animate-in zoom-in duration-500" />
+                    )}
+                  </div>
+
                   <h2 className="text-5xl font-black text-osrs-gold mb-2 drop-shadow-md">{winner.name}</h2>
                   <div className="h-1 w-24 bg-gradient-to-r from-transparent via-osrs-gold to-transparent mx-auto opacity-50"></div>
                 </div>
@@ -500,9 +546,10 @@ function App() {
                         <button
                           key={boss}
                           onClick={() => { setInputName(boss); setInputMetric('Kills'); setShowQuickAdd(false); }}
-                          className="text-left text-sm p-3 bg-osrs-bg border border-osrs-border/50 hover:border-osrs-gold hover:bg-osrs-bg/80 rounded-lg transition-all hover:shadow-md flex items-center justify-between group"
+                          className="text-left text-sm p-2 bg-osrs-bg border border-osrs-border/50 hover:border-osrs-gold hover:bg-osrs-bg/80 rounded-lg transition-all hover:shadow-md flex items-center gap-3 group"
                         >
-                          <span className="font-medium text-gray-300 group-hover:text-white truncate">{boss}</span>
+                          <img src={getBossImage(boss)} alt={boss} className="w-8 h-8 object-contain" />
+                          <span className="font-medium text-gray-300 group-hover:text-white truncate flex-1">{boss}</span>
                           <Plus size={14} className="opacity-0 group-hover:opacity-100 text-osrs-gold transition-opacity" />
                         </button>
                       ))}
@@ -518,9 +565,10 @@ function App() {
                         <button
                           key={skill}
                           onClick={() => { setInputName(skill); setInputMetric('XP'); setShowQuickAdd(false); }}
-                          className="text-left text-sm p-3 bg-osrs-bg border border-osrs-border/50 hover:border-osrs-gold hover:bg-osrs-bg/80 rounded-lg transition-all hover:shadow-md flex items-center justify-between group"
+                          className="text-left text-sm p-2 bg-osrs-bg border border-osrs-border/50 hover:border-osrs-gold hover:bg-osrs-bg/80 rounded-lg transition-all hover:shadow-md flex items-center gap-3 group"
                         >
-                          <span className="font-medium text-gray-300 group-hover:text-white truncate">{skill}</span>
+                          <img src={getSkillImage(skill)} alt={skill} className="w-6 h-6 object-contain" />
+                          <span className="font-medium text-gray-300 group-hover:text-white truncate flex-1">{skill}</span>
                           <Plus size={14} className="opacity-0 group-hover:opacity-100 text-osrs-gold transition-opacity" />
                         </button>
                       ))}
@@ -554,18 +602,22 @@ function App() {
                       </h3>
                       <div className="space-y-3">
                         {achievements.length === 0 && <p className="text-osrs-accent italic text-sm">No achievements unlocked yet.</p>}
-                        {achievements.map(ach => (
-                          <div key={ach.id} className="bg-osrs-bg border border-osrs-border p-3 rounded-lg flex items-center gap-3">
-                            <div className="bg-osrs-gold p-2 rounded-full text-osrs-panel">
-                              {ach.icon}
+                        {achievements.map(achId => {
+                          const ach = ACHIEVEMENT_LIST.find(a => a.id === achId);
+                          if (!ach) return null;
+                          return (
+                            <div key={ach.id} className="bg-osrs-bg border border-osrs-border p-3 rounded-lg flex items-center gap-3">
+                              <div className="bg-osrs-gold p-2 rounded-full text-osrs-panel">
+                                {ach.icon}
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-white text-sm">{ach.name}</h4>
+                                <p className="text-xs text-osrs-accent">{ach.description}</p>
+                                <p className="text-[10px] text-osrs-accent/50 mt-1">Unlocked!</p>
+                              </div>
                             </div>
-                            <div>
-                              <h4 className="font-bold text-white text-sm">{ach.name}</h4>
-                              <p className="text-xs text-osrs-accent">{ach.description}</p>
-                              <p className="text-[10px] text-osrs-accent/50 mt-1">Unlocked: {new Date(ach.unlockedAt!).toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
 

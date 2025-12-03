@@ -93,17 +93,18 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
     }
 
     return (
-        <div className="relative w-[400px] h-[400px] flex items-center justify-center">
-            {/* The Stopper/Pointer (pointing at 3 o'clock) */}
-            <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 z-20 w-0 h-0 
-          border-t-[15px] border-t-transparent
-          border-b-[15px] border-b-transparent
-          border-r-[25px] border-r-osrs-gold drop-shadow-lg"></div>
+        <div className="relative w-[500px] h-[500px] flex items-center justify-center perspective-1000">
+            {/* Outer Bezel/Rim with 3D depth */}
+            <div className="absolute inset-0 rounded-full border-[16px] border-osrs-border shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(0,0,0,0.8)] bg-osrs-panel z-10 pointer-events-none transform translate-z-10"></div>
 
             <motion.div
-                className="w-full h-full rounded-full overflow-hidden shadow-bezel relative z-10 border-8 border-osrs-panel"
+                className="w-full h-full rounded-full relative preserve-3d"
                 animate={controls}
-                style={{ rotate: rotation, opacity: isSpinning ? 0.9 : 1 }}
+                style={{
+                    rotate: rotation,
+                    filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.5))',
+                    transformStyle: 'preserve-3d'
+                }}
             >
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
                     <g transform={`rotate(-90 ${center} ${center})`}> {/* Rotate -90 so slice 0 starts at top before spinning */}
@@ -145,11 +146,21 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                             )
                         })}
                     </g>
-                    {/* Center hub cap */}
-                    <circle cx={center} cy={center} r={radius / 5} fill="#3c352d" stroke="#5b4028" strokeWidth="4" />
-                    <circle cx={center} cy={center} r={radius / 8} fill="#1e2124" />
                 </svg>
             </motion.div>
+
+            {/* Center Hub Cap (Static) */}
+            <div className="absolute w-16 h-16 bg-gradient-to-br from-osrs-gold to-yellow-800 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.5)] z-20 flex items-center justify-center border-4 border-osrs-panel">
+                <div className="w-8 h-8 bg-osrs-panel rounded-full shadow-inner"></div>
+            </div>
+
+            {/* The Stopper/Pointer (pointing at 3 o'clock) */}
+            <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-30 filter drop-shadow-lg">
+                <div className="w-0 h-0 
+              border-t-[15px] border-t-transparent
+              border-b-[15px] border-b-transparent
+              border-r-[30px] border-r-osrs-gold transform rotate-180"></div>
+            </div>
         </div>
     );
 };

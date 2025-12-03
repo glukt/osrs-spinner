@@ -18,12 +18,34 @@ const ACHIEVEMENT_LIST = [
 ];
 
 const BOSSES = [
-  "Vorkath", "Zulrah", "Commander Zilyana", "General Graardor", "Kree'arra", "K'ril Tsutsaroth",
-  "Nex", "Corporeal Beast", "King Black Dragon", "Giant Mole", "Kalphite Queen", "Callisto",
-  "Venenatis", "Vet'ion", "Chaos Fanatic", "Crazy Archaeologist", "Scorpia", "Dagannoth Kings",
-  "Barrows", "Chambers of Xeric", "Theatre of Blood", "Tombs of Amascut", "The Inferno",
-  "Fight Caves", "Gauntlet", "Corrupted Gauntlet", "Muspah", "Duke Sucellus", "The Leviathan",
-  "The Whisperer", "Vardorvis"
+  // Raids
+  "Chambers of Xeric", "Theatre of Blood", "Tombs of Amascut",
+  "Great Olm", "Tekton", "Vasa Nistirio", "Vanguards", "Ice Demon", "Muttadiles",
+  "Maiden of Sugadinti", "Pestilent Bloat", "Nylocas Vasilias", "Sotetseg", "Xarpus", "Verzik Vitur",
+  "Ba-Ba", "Kephri", "Akkha", "Zebak", "Tumeken's Warden",
+
+  // God Wars Dungeon
+  "Commander Zilyana", "General Graardor", "Kree'arra", "K'ril Tsutsaroth", "Nex",
+
+  // Slayer Bosses
+  "Cerberus", "Kraken", "Thermonuclear Smoke Devil", "Abyssal Sire", "Alchemical Hydra", "Grotesque Guardians",
+
+  // Wilderness
+  "Chaos Elemental", "King Black Dragon", "Scorpia", "Venenatis", "Vet'ion", "Callisto",
+  "Chaos Fanatic", "Crazy Archaeologist", "Spindel", "Artio", "Calvar'ion",
+
+  // Dragonkin
+  "Vorkath", "Galvek",
+
+  // DT2 Bosses
+  "Duke Sucellus", "The Leviathan", "The Whisperer", "Vardorvis",
+
+  // Others
+  "Zulrah", "Corporeal Beast", "Giant Mole", "Kalphite Queen", "Dagannoth Kings", "Barrows",
+  "Sarachnis", "Zalcano", "Hespori", "Skotizo", "Deranged Archaeologist", "Mimic", "Obor", "Bryophyta",
+  "The Nightmare", "Phosani's Nightmare", "Scurrius", "Hueycoatl", "Sol Heredit", "Araxxor",
+  "Moons of Peril", "Blood Moon", "Blue Moon", "Eclipse Moon",
+  "The Inferno", "Fight Caves", "Gauntlet", "Corrupted Gauntlet", "Muspah"
 ];
 
 const SKILLS = [
@@ -129,6 +151,18 @@ function App() {
     if (name === "Gauntlet") formatted = "Crystalline_Hunllef";
     if (name === "Corrupted Gauntlet") formatted = "Corrupted_Hunllef";
     if (name === "Muspah") formatted = "Phantom_Muspah";
+
+    // New mappings
+    if (name === "Maiden of Sugadinti") formatted = "The_Maiden_of_Sugadinti";
+    if (name === "Vasa Nistirio") formatted = "Vasa_Nistirio";
+    if (name === "Ice Demon") formatted = "Ice_demon";
+    if (name === "Moons of Peril") formatted = "Blood_Moon"; // Representative
+    if (name === "Blood Moon") formatted = "Blood_Moon";
+    if (name === "Blue Moon") formatted = "Blue_Moon";
+    if (name === "Eclipse Moon") formatted = "Eclipse_Moon";
+    if (name === "The Nightmare") formatted = "The_Nightmare";
+    if (name === "Phosani's Nightmare") formatted = "Phosani's_Nightmare";
+    if (name === "Grotesque Guardians") formatted = "Dusk"; // Representative
 
     return `https://oldschool.runescape.wiki/images/${formatted}.png`;
   };

@@ -10,6 +10,7 @@ interface WheelCanvasProps {
 }
 
 const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComplete, spinTriggerToken }) => {
+    console.log("WheelCanvas rendering with tasks:", tasks.length);
     const controls = useAnimation();
     const rotation = useMotionValue(0);
     const [lastRotation, setLastRotation] = useState(0);

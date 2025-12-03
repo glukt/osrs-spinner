@@ -724,8 +724,11 @@ function App() {
                     <div className="grid md:grid-cols-2 gap-8">
                       {/* Achievements Column */}
                       <div>
-                        <h3 className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2">
-                          <Trophy size={18} /> Unlocked Achievements
+                        <h3
+                          className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+                          onClick={() => setShowAllAchievements(true)}
+                        >
+                          <Trophy size={18} /> Unlocked Achievements <span className="text-xs text-osrs-accent">(Click to view all)</span>
                         </h3>
                         <div className="space-y-3">
                           {achievements.length === 0 && <p className="text-osrs-accent italic text-sm">No achievements unlocked yet.</p>}
@@ -789,10 +792,50 @@ function App() {
                 </div>
               </div>
             )}
+
+            {/* ---- All Achievements Modal ---- */}
+            {showAllAchievements && (
+              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+                <div className="bg-osrs-panel border-4 border-osrs-border rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+                  <div className="bg-osrs-border p-4 flex justify-between items-center border-b border-black/50">
+                    <h2 className="text-xl font-bold text-osrs-gold flex items-center gap-2">
+                      <Trophy size={24} /> All Achievements
+                    </h2>
+                    <button onClick={() => setShowAllAchievements(false)} className="text-osrs-accent hover:text-white">
+                      <X size={24} />
+                    </button>
+                  </div>
+
+                  <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {ACHIEVEMENT_LIST.map(ach => {
+                      const isUnlocked = achievements.includes(ach.id);
+                      return (
+                        <div
+                          key={ach.id}
+                          className={`border p-4 rounded-lg flex items-center gap-4 transition-all ${isUnlocked
+                            ? 'bg-osrs-bg border-osrs-gold/50 shadow-[0_0_10px_rgba(255,215,0,0.1)]'
+                            : 'bg-black/40 border-stone-800 opacity-60 grayscale'
+                            }`}
+                        >
+                          <div className={`p-3 rounded-full ${isUnlocked ? 'bg-osrs-gold text-osrs-panel' : 'bg-stone-800 text-stone-500'}`}>
+                            {isUnlocked ? ach.icon : <Lock size={16} />}
+                          </div>
+                          <div>
+                            <h4 className={`font-bold ${isUnlocked ? 'text-white' : 'text-stone-500'}`}>{ach.name}</h4>
+                            <p className="text-xs text-osrs-accent">{ach.description}</p>
+                            {isUnlocked && <p className="text-[10px] text-green-400 mt-1 font-bold flex items-center gap-1"><CheckCircle size={10} /> Unlocked</p>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </main>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 

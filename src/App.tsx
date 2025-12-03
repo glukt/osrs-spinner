@@ -725,7 +725,7 @@ function App() {
                       {/* Achievements Column */}
                       <div>
                         <h3
-                          className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+                          className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2 cursor-pointer hover:text-white transition-colors relative z-20"
                           onClick={() => setShowAllAchievements(true)}
                         >
                           <Trophy size={18} /> Unlocked Achievements <span className="text-xs text-osrs-accent">(Click to view all)</span>
@@ -795,7 +795,7 @@ function App() {
 
             {/* ---- All Achievements Modal ---- */}
             {showAllAchievements && (
-              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
                 <div className="bg-osrs-panel border-4 border-osrs-border rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
                   <div className="bg-osrs-border p-4 flex justify-between items-center border-b border-black/50">
                     <h2 className="text-xl font-bold text-osrs-gold flex items-center gap-2">

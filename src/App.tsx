@@ -724,12 +724,20 @@ function App() {
                     <div className="grid md:grid-cols-2 gap-8">
                       {/* Achievements Column */}
                       <div>
-                        <h3
-                          className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2 cursor-pointer hover:text-white transition-colors relative z-20"
+                        <div
+                          className="bg-osrs-bg border border-osrs-gold/30 p-4 rounded-lg mb-4 cursor-pointer hover:bg-osrs-gold/10 hover:border-osrs-gold transition-all group relative z-20 shadow-md"
                           onClick={() => setShowAllAchievements(true)}
                         >
-                          <Trophy size={18} /> Unlocked Achievements <span className="text-xs text-osrs-accent">(Click to view all)</span>
-                        </h3>
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-osrs-gold flex items-center gap-2">
+                              <Trophy size={18} /> Unlocked Achievements
+                            </h3>
+                            <span className="text-xs bg-osrs-gold text-osrs-panel px-2 py-1 rounded font-bold group-hover:bg-yellow-400 transition-colors">
+                              View All
+                            </span>
+                          </div>
+                          <p className="text-xs text-osrs-accent mt-1">Click to view your progress and unlocked rewards.</p>
+                        </div>
                         <div className="space-y-3">
                           {achievements.length === 0 && <p className="text-osrs-accent italic text-sm">No achievements unlocked yet.</p>}
                           {achievements.map(achId => {

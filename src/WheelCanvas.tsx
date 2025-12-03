@@ -103,7 +103,8 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                 style={{
                     rotate: rotation,
                     filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.5))',
-                    transformStyle: 'preserve-3d'
+                    transformStyle: 'preserve-3d',
+                    opacity: isSpinning ? 0.9 : 1
                 }}
             >
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>

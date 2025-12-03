@@ -96,7 +96,8 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
     return (
         <div className="relative w-[500px] h-[500px] flex items-center justify-center perspective-1000">
             {/* Outer Bezel/Rim with 3D depth */}
-            <div className="absolute inset-0 rounded-full border-[16px] border-osrs-border shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(0,0,0,0.8)] bg-osrs-panel z-10 pointer-events-none transform translate-z-10"></div>
+            {/* Outer Bezel/Rim with 3D depth */}
+            <div className="absolute inset-0 rounded-full border-[16px] border-red-900/80 shadow-[0_0_50px_rgba(220,38,38,0.2),inset_0_0_20px_rgba(0,0,0,0.8)] z-10 pointer-events-none transform translate-z-10"></div>
 
             <motion.div
                 className="w-full h-full rounded-full relative preserve-3d"
@@ -152,8 +153,9 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
             </motion.div>
 
             {/* Center Hub Cap (Static) */}
-            <div className="absolute w-16 h-16 bg-gradient-to-br from-osrs-gold to-yellow-800 rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.5)] z-20 flex items-center justify-center border-4 border-osrs-panel">
-                <div className="w-8 h-8 bg-osrs-panel rounded-full shadow-inner"></div>
+            {/* Center Hub Cap (Static) */}
+            <div className="absolute w-16 h-16 bg-gradient-to-br from-red-900 to-black rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.8)] z-20 flex items-center justify-center border-4 border-red-950">
+                <div className="w-8 h-8 bg-red-950 rounded-full shadow-inner"></div>
             </div>
 
             {/* The Stopper/Pointer (pointing at 3 o'clock) */}
@@ -161,7 +163,7 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                 <div className="w-0 h-0 
               border-t-[15px] border-t-transparent
               border-b-[15px] border-b-transparent
-              border-r-[30px] border-r-osrs-gold transform rotate-180"></div>
+              border-r-[30px] border-r-red-600 transform rotate-180 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
             </div>
         </div>
     );

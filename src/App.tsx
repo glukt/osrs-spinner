@@ -4,8 +4,8 @@ import confetti from 'canvas-confetti';
 import WheelCanvas from './WheelCanvas';
 import { Task, MetricType, Achievement } from './types';
 
-// Utility for random colors that fit the theme
-const colors = ['#7c2d12', '#065f46', '#1e3a8a', '#581c87', '#831843', '#4d7c0f'];
+// Utility for random colors that fit the spooky theme
+const colors = ['#450a0a', '#7f1d1d', '#991b1b', '#b91c1c', '#000000', '#18181b', '#27272a', '#854d0e', '#a16207'];
 const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 // Achievement Definitions

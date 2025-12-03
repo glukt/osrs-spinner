@@ -401,7 +401,10 @@ function App() {
                 <span className="text-sm font-bold text-white hidden sm:inline">History</span>
               </button>
 
-              <div className="flex items-center gap-6 bg-osrs-bg px-6 py-2 rounded-full border border-osrs-border shadow-inner">
+              <button
+                onClick={() => setShowAllAchievements(true)}
+                className="flex items-center gap-6 bg-osrs-bg px-6 py-2 rounded-full border border-osrs-border shadow-inner hover:bg-osrs-border transition-colors cursor-pointer"
+              >
                 <div className="flex items-center gap-2">
                   <Trophy className="text-osrs-gold" size={18} />
                   <span className="font-bold text-white">Streak: <span className="text-osrs-gold">{streak}</span></span>
@@ -410,7 +413,7 @@ function App() {
                 <div className="text-sm text-osrs-accent hidden sm:block">
                   {achievements.length} / {ACHIEVEMENT_LIST.length} Unlocked
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </header>

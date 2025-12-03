@@ -137,7 +137,7 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                                         fontWeight="bold"
                                         style={{ textShadow: '1px 1px 2px black' }}
                                         // Rotate text so it's readable outward from center
-                                        transform={`rotate(${angleMidpoint} ${tx} ${ty})`}
+                                        transform={`rotate(${angleMidpoint + (angleMidpoint > 90 && angleMidpoint < 270 ? 180 : 0)} ${tx} ${ty})`}
                                     >
                                         {task.name}
                                         <tspan x={tx} dy="1.2em" fontSize="10" opacity="0.8">
@@ -163,7 +163,7 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                 <div className="w-0 h-0 
               border-t-[15px] border-t-transparent
               border-b-[15px] border-b-transparent
-              border-r-[30px] border-r-red-600 transform rotate-180 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
+              border-r-[30px] border-r-red-600 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
             </div>
         </div>
     );

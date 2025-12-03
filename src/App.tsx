@@ -112,49 +112,30 @@ function App() {
 
   // --- Logic ---
 
-  const BOSS_IMAGES: Record<string, string> = {
-    "Vorkath": "https://oldschool.runescape.wiki/images/Vorkath_chathead.png?a4903",
-    "Zulrah": "https://oldschool.runescape.wiki/images/Zulrah_chathead.png?5d162",
-    "Commander Zilyana": "https://oldschool.runescape.wiki/images/Commander_Zilyana_chathead.png?4f256",
-    "General Graardor": "https://oldschool.runescape.wiki/images/General_Graardor_chathead.png?4dd71",
-    "Kree'arra": "https://oldschool.runescape.wiki/images/Kree%27arra_chathead.png?011f2",
-    "K'ril Tsutsaroth": "https://oldschool.runescape.wiki/images/K%27ril_Tsutsaroth_chathead.png?e007e",
-    "Nex": "https://oldschool.runescape.wiki/images/Nex_chathead.png?22635",
-    "Corporeal Beast": "https://oldschool.runescape.wiki/images/Corporeal_Beast_chathead.png?4612a",
-    "King Black Dragon": "https://oldschool.runescape.wiki/images/King_Black_Dragon_chathead.png?e05f2",
-    "Giant Mole": "https://oldschool.runescape.wiki/images/Giant_Mole_chathead.png?b7558",
-    "Kalphite Queen": "https://oldschool.runescape.wiki/images/Kalphite_Queen_chathead.png?50060",
-    "Callisto": "https://oldschool.runescape.wiki/images/Callisto_chathead.png?56789",
-    "Venenatis": "https://oldschool.runescape.wiki/images/Venenatis_chathead.png?12345",
-    "Vet'ion": "https://oldschool.runescape.wiki/images/Vet%27ion_chathead.png?67890",
-    "Chaos Fanatic": "https://oldschool.runescape.wiki/images/Chaos_Fanatic_chathead.png?abcde",
-    "Crazy Archaeologist": "https://oldschool.runescape.wiki/images/Crazy_Archaeologist_chathead.png?fghij",
-    "Scorpia": "https://oldschool.runescape.wiki/images/Scorpia_chathead.png?klmno",
-    "Dagannoth Kings": "https://oldschool.runescape.wiki/images/Dagannoth_Rex_chathead.png?pqrst", // Using Rex as representative
-    "Barrows": "https://oldschool.runescape.wiki/images/Dharok_the_Wretched_chathead.png?uvwxy", // Using Dharok as representative
-    "Chambers of Xeric": "https://oldschool.runescape.wiki/images/Olm_chathead.png?z1234",
-    "Theatre of Blood": "https://oldschool.runescape.wiki/images/Lady_Verzik_Vitur_chathead.png?56789",
-    "Tombs of Amascut": "https://oldschool.runescape.wiki/images/Tumeken%27s_Warden_chathead.png?01234",
-    "The Inferno": "https://oldschool.runescape.wiki/images/TzKal-Zuk_chathead.png?56789",
-    "Fight Caves": "https://oldschool.runescape.wiki/images/TzTok-Jad_chathead.png?01234",
-    "Gauntlet": "https://oldschool.runescape.wiki/images/Crystalline_Hunllef_chathead.png?56789",
-    "Corrupted Gauntlet": "https://oldschool.runescape.wiki/images/Corrupted_Hunllef_chathead.png?01234",
-    "Muspah": "https://oldschool.runescape.wiki/images/Phantom_Muspah_chathead.png?56789",
-    "Duke Sucellus": "https://oldschool.runescape.wiki/images/Duke_Sucellus_chathead.png?01234",
-    "The Leviathan": "https://oldschool.runescape.wiki/images/The_Leviathan_chathead.png?56789",
-    "The Whisperer": "https://oldschool.runescape.wiki/images/The_Whisperer_chathead.png?01234",
-    "Vardorvis": "https://oldschool.runescape.wiki/images/Vardorvis_chathead.png?56789"
-  };
+
 
   const getBossImage = (name: string) => {
-    if (BOSS_IMAGES[name]) return BOSS_IMAGES[name];
-    const formatted = name.replace(/ /g, '_');
-    return `https://oldschool.runescape.wiki/images/${formatted}_chathead.png`;
+    // Special handling for multi-word bosses or specific filenames if needed
+    let formatted = name.replace(/ /g, '_');
+
+    // Handle specific cases where the wiki filename might differ slightly
+    if (name === "Dagannoth Kings") formatted = "Dagannoth_Rex";
+    if (name === "Barrows") formatted = "Dharok_the_Wretched";
+    if (name === "Chambers of Xeric") formatted = "Great_Olm";
+    if (name === "Theatre of Blood") formatted = "Lady_Verzik_Vitur";
+    if (name === "Tombs of Amascut") formatted = "Tumeken's_Warden";
+    if (name === "The Inferno") formatted = "TzKal-Zuk";
+    if (name === "Fight Caves") formatted = "TzTok-Jad";
+    if (name === "Gauntlet") formatted = "Crystalline_Hunllef";
+    if (name === "Corrupted Gauntlet") formatted = "Corrupted_Hunllef";
+    if (name === "Muspah") formatted = "Phantom_Muspah";
+
+    return `https://oldschool.runescape.wiki/images/${formatted}.png`;
   };
 
   const getSkillImage = (name: string) => {
     const formatted = name.replace(/ /g, '_');
-    return `https://oldschool.runescape.wiki/images/${formatted}_icon_(detail).png`;
+    return `https://oldschool.runescape.wiki/images/${formatted}_icon.png`;
   };
 
   const unlockAchievement = (id: string) => {
@@ -186,7 +167,7 @@ function App() {
 
     const initialGoal = Math.floor(Math.random() * (inputMax - inputMin + 1) + inputMin);
     const newTask: Task = {
-      id: crypto.randomUUID(),
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       name: nameToUse,
       color: getRandomColor(),
       minBase: inputMin,
@@ -195,6 +176,7 @@ function App() {
       metric: metricToUse,
       multiplier: 1,
     };
+    console.log("Adding task:", newTask);
     setTasks(prev => [...prev, newTask]); // Use functional update for reliability
     if (!nameOverride) setInputName('');
   };

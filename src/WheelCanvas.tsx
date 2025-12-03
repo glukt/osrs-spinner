@@ -15,6 +15,9 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
     const rotation = useMotionValue(0);
     const [lastRotation, setLastRotation] = useState(0);
 
+    // Track the last processed token to prevent auto-spin on remount
+    const prevSpinToken = React.useRef(spinTriggerToken);
+
     const size = 500; // Wheel size in px (matches container)
     const center = size / 2;
     const radius = size / 2 - 20; // bezel width
@@ -48,7 +51,10 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
 
     // --- Trigger Spin ---
     useEffect(() => {
-        if (spinTriggerToken > 0 && tasks.length > 0) {
+        // Only spin if the token has changed and is greater than the last processed one
+        // This prevents spinning on mount if the token is already positive
+        if (spinTriggerToken > 0 && spinTriggerToken !== prevSpinToken.current && tasks.length > 0) {
+            prevSpinToken.current = spinTriggerToken;
             const newTargetRotation = lastRotation + 3600 + Math.random() * 360; // At least 10 full spins + random
 
             controls.start({
@@ -63,6 +69,9 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                 setLastRotation(newTargetRotation);
                 calculateWinner(newTargetRotation);
             });
+        } else {
+            // If we're mounting with an existing token, just sync the ref
+            prevSpinToken.current = spinTriggerToken;
         }
     }, [spinTriggerToken]);
 

@@ -34,3 +34,44 @@ body {
     transform: translateZ(10px);
   }
 }
+
+@keyframes ghost-float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateY(-20px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes text-flicker {
+
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 10px #ff0000;
+  }
+
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+  }
+
+  70% {
+    opacity: 0.9;
+    text-shadow: 0 0 5px #ff0000;
+  }
+}
+
+.animate-ghost {
+  animation: ghost-float 6s ease-in-out infinite;
+}
+
+.animate-flicker {
+  animation: text-flicker 4s infinite alternate;
+}

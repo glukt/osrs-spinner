@@ -51,7 +51,7 @@ const BOSSES = [
 const SKILLS = [
   "Attack", "Strength", "Defence", "Ranged", "Prayer", "Magic", "Runecraft", "Construction",
   "Hitpoints", "Agility", "Herblore", "Thieving", "Crafting", "Fletching", "Slayer", "Hunter",
-  "Mining", "Smithing", "Fishing", "Cooking", "Firemaking", "Woodcutting", "Farming"
+  "Mining", "Smithing", "Fishing", "Cooking", "Firemaking", "Woodcutting", "Farming", "Sailing"
 ];
 
 function App() {
@@ -69,6 +69,7 @@ function App() {
   const [showAchievementModal, setShowAchievementModal] = useState<Achievement | null>(null);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   // Input States
   const [inputName, setInputName] = useState('');
@@ -163,6 +164,11 @@ function App() {
     if (name === "The Nightmare") formatted = "The_Nightmare";
     if (name === "Phosani's Nightmare") formatted = "Phosani's_Nightmare";
     if (name === "Grotesque Guardians") formatted = "Dusk"; // Representative
+
+    // Fixes for missing icons
+    if (name === "Crazy Archaeologist") formatted = "Crazy_archaeologist";
+    if (name === "Zulrah") formatted = "Zulrah_(serpentine)";
+    if (name === "Theatre of Blood") formatted = "Theatre_of_Blood_logo";
 
     return `https://oldschool.runescape.wiki/images/${formatted}.png`;
   };
@@ -310,6 +316,32 @@ function App() {
     }
   };
 
+  if (showSplash) {
+    return (
+      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 overflow-hidden">
+        {/* Spooky Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-black to-black pointer-events-none"></div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]"></div>
+
+        <div className="relative z-10 flex flex-col items-center gap-8">
+          <h1 className="text-6xl md:text-8xl font-black text-red-600 tracking-widest uppercase animate-flicker font-serif" style={{ fontFamily: 'Cinzel, serif' }}>
+            Let Fate Decide..
+          </h1>
+
+          <div className="animate-ghost">
+            <Swords size={64} className="text-red-800 opacity-50" />
+          </div>
+
+          <button
+            onClick={() => setShowSplash(false)}
+            className="mt-12 px-12 py-4 bg-transparent border-2 border-red-800 text-red-600 font-bold text-xl uppercase tracking-[0.3em] hover:bg-red-900/20 hover:text-red-500 hover:border-red-600 transition-all duration-500 shadow-[0_0_20px_rgba(153,27,27,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] active:scale-95"
+          >
+            Enter
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-osrs-bg text-gray-200 font-sans flex flex-col">
@@ -497,6 +529,7 @@ function App() {
             {/* Decorative glow behind wheel */}
             <div className="absolute inset-0 bg-osrs-gold/5 blur-3xl rounded-full transform scale-110 pointer-events-none"></div>
             <WheelCanvas
+              key={tasks.length} // Force re-render when tasks change
               tasks={tasks}
               isSpinning={isSpinning}
               onSpinComplete={handleSpinComplete}

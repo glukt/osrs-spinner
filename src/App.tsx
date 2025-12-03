@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Swords, RotateCw, Trophy, Star, Zap } from 'lucide-react';
+import { Plus, Trash2, Swords, RotateCw, Trophy, Star, Zap, CheckCircle, History, ScrollText } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import WheelCanvas from './WheelCanvas';
 import { Task, MetricType, Achievement } from './types';
@@ -35,6 +35,8 @@ const SKILLS = [
 function App() {
   // --- State ---
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [streak, setStreak] = useState(0);
 
@@ -44,6 +46,7 @@ function App() {
   const [showWinModal, setShowWinModal] = useState(false);
   const [showAchievementModal, setShowAchievementModal] = useState<Achievement | null>(null);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Input States
   const [inputName, setInputName] = useState('');
@@ -54,10 +57,14 @@ function App() {
   // --- Persistence ---
   useEffect(() => {
     const savedTasks = localStorage.getItem('osrs-spinner-tasks');
+    const savedActiveTask = localStorage.getItem('osrs-spinner-active-task');
+    const savedCompletedTasks = localStorage.getItem('osrs-spinner-completed-tasks');
     const savedAchievements = localStorage.getItem('osrs-spinner-achievements');
     const savedStreak = localStorage.getItem('osrs-spinner-streak');
 
     if (savedTasks) setTasks(JSON.parse(savedTasks));
+    if (savedActiveTask) setActiveTask(JSON.parse(savedActiveTask));
+    if (savedCompletedTasks) setCompletedTasks(JSON.parse(savedCompletedTasks));
     if (savedAchievements) setAchievements(JSON.parse(savedAchievements));
     if (savedStreak) setStreak(parseInt(savedStreak));
   }, []);
@@ -65,6 +72,18 @@ function App() {
   useEffect(() => {
     localStorage.setItem('osrs-spinner-tasks', JSON.stringify(tasks));
   }, [tasks]);
+
+  useEffect(() => {
+    if (activeTask) {
+      localStorage.setItem('osrs-spinner-active-task', JSON.stringify(activeTask));
+    } else {
+      localStorage.removeItem('osrs-spinner-active-task');
+    }
+  }, [activeTask]);
+
+  useEffect(() => {
+    localStorage.setItem('osrs-spinner-completed-tasks', JSON.stringify(completedTasks));
+  }, [completedTasks]);
 
   useEffect(() => {
     localStorage.setItem('osrs-spinner-achievements', JSON.stringify(achievements));
@@ -119,7 +138,7 @@ function App() {
 
   const removeTask = (id: string) => {
     setTasks(tasks.filter(t => t.id !== id));
-    setStreak(0); // Reset streak on removal (optional punishment)
+    // Removing a task from the list doesn't punish streak anymore, only abandoning an active task would (if we implemented that)
   };
 
   const handleSpinClick = () => {
@@ -173,6 +192,16 @@ function App() {
   const handleAcceptTask = () => {
     if (!winner) return;
 
+    // Move to active task instead of completing immediately
+    setActiveTask(winner);
+    setTasks(tasks.filter(t => t.id !== winner.id));
+
+    setShowWinModal(false);
+  }
+
+  const handleCompleteActiveTask = () => {
+    if (!activeTask) return;
+
     // Achievement Checks
     const newStreak = streak + 1;
     setStreak(newStreak);
@@ -181,12 +210,9 @@ function App() {
     if (newStreak >= 3) unlockAchievement('streak_3');
     if (newStreak >= 5) unlockAchievement('streak_5');
 
-    // Remove the task after accepting it? Or keep it? 
-    // Usually in these tools you remove it to "complete" it.
-    // Let's remove it for now to signify completion.
-    setTasks(tasks.filter(t => t.id !== winner.id));
-
-    setShowWinModal(false);
+    // Add to history
+    setCompletedTasks(prev => [activeTask, ...prev]);
+    setActiveTask(null);
 
     // Big Celebration Confetti
     confetti({
@@ -195,7 +221,15 @@ function App() {
       origin: { y: 0.6 },
       colors: ['#d4af37', '#5b4028', '#ffffff']
     });
-  }
+  };
+
+  const handleAbandonTask = () => {
+    if (!activeTask) return;
+    if (confirm("Are you sure you want to abandon this task? Your streak will be reset.")) {
+      setActiveTask(null);
+      setStreak(0);
+    }
+  };
 
 
   return (
@@ -212,14 +246,24 @@ function App() {
           </div>
 
           {/* Stats Pill */}
-          <div className="flex items-center gap-6 bg-osrs-bg px-6 py-2 rounded-full border border-osrs-border shadow-inner">
-            <div className="flex items-center gap-2">
-              <Trophy className="text-osrs-gold" size={18} />
-              <span className="font-bold text-white">Streak: <span className="text-osrs-gold">{streak}</span></span>
-            </div>
-            <div className="w-px h-4 bg-osrs-border"></div>
-            <div className="text-sm text-osrs-accent">
-              {achievements.length} / {ACHIEVEMENT_LIST.length} Unlocked
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowHistory(true)}
+              className="flex items-center gap-2 bg-osrs-bg px-4 py-2 rounded-full border border-osrs-border hover:bg-osrs-border transition-colors"
+            >
+              <History size={18} className="text-osrs-accent" />
+              <span className="text-sm font-bold text-white hidden sm:inline">History</span>
+            </button>
+
+            <div className="flex items-center gap-6 bg-osrs-bg px-6 py-2 rounded-full border border-osrs-border shadow-inner">
+              <div className="flex items-center gap-2">
+                <Trophy className="text-osrs-gold" size={18} />
+                <span className="font-bold text-white">Streak: <span className="text-osrs-gold">{streak}</span></span>
+              </div>
+              <div className="w-px h-4 bg-osrs-border hidden sm:block"></div>
+              <div className="text-sm text-osrs-accent hidden sm:block">
+                {achievements.length} / {ACHIEVEMENT_LIST.length} Unlocked
+              </div>
             </div>
           </div>
         </div>
@@ -230,9 +274,42 @@ function App() {
         {/* ---- Left Panel: Controls & List ---- */}
         <div className="w-full max-w-md space-y-6 flex flex-col h-full justify-center">
 
+          {/* Active Task Card */}
+          {activeTask && (
+            <div className="bg-osrs-panel border-2 border-green-600 rounded-xl p-6 shadow-2xl relative overflow-hidden animate-in slide-in-from-left duration-500">
+              <div className="absolute inset-0 bg-green-900/20 pointer-events-none"></div>
+              <div className="relative z-10">
+                <h3 className="text-green-400 font-bold uppercase tracking-wider text-xs mb-2 flex items-center gap-2">
+                  <Zap size={14} /> Current Objective
+                </h3>
+                <h2 className="text-2xl font-bold text-white mb-1">{activeTask.name}</h2>
+                <p className="text-3xl font-mono text-osrs-gold mb-4">
+                  {activeTask.currentGoal} <span className="text-lg text-osrs-accent">{activeTask.metric}</span>
+                  {activeTask.multiplier > 1 && <span className="text-sm text-red-400 ml-2">(x{activeTask.multiplier})</span>}
+                </p>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleCompleteActiveTask}
+                    className="flex-1 bg-green-700 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    <CheckCircle size={18} /> Complete
+                  </button>
+                  <button
+                    onClick={handleAbandonTask}
+                    className="bg-red-900/50 hover:bg-red-900 text-red-200 p-3 rounded-lg border border-red-800 transition-colors"
+                    title="Abandon Task (Resets Streak)"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Input Form */}
           <div className="bg-osrs-panel border-2 border-osrs-border rounded-xl p-6 shadow-2xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-[url('https://i.imgur.com/4w7121r.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent pointer-events-none"></div>
 
             <div className="flex justify-between items-center mb-6 relative z-10">
               <h2 className="text-xl text-osrs-gold font-bold flex items-center gap-2">
@@ -294,7 +371,7 @@ function App() {
 
           {/* Task List */}
           <div className="bg-osrs-panel border-2 border-osrs-border rounded-xl p-4 shadow-2xl flex-1 min-h-[200px] max-h-[400px] overflow-hidden flex flex-col relative">
-            <div className="absolute inset-0 bg-[url('https://i.imgur.com/4w7121r.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
             <h3 className="text-osrs-gold font-bold mb-3 sticky top-0 bg-osrs-panel z-10 pb-2 border-b border-osrs-border/50 flex justify-between items-center">
               <span>Current Tasks</span>
               <span className="bg-osrs-bg px-2 py-0.5 rounded text-xs text-white">{tasks.length}</span>
@@ -340,11 +417,14 @@ function App() {
 
           <button
             onClick={handleSpinClick}
-            disabled={isSpinning || tasks.length === 0}
+            disabled={isSpinning || tasks.length === 0 || activeTask !== null}
+            title={activeTask ? "Complete your current task first!" : ""}
             className="bg-gradient-to-b from-osrs-gold to-yellow-700 text-osrs-panel text-2xl font-black tracking-wide py-5 px-16 rounded-full shadow-glow transform transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-4 border-osrs-panel relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 skew-y-12"></div>
-            <span className="relative z-10 drop-shadow-sm">{isSpinning ? 'SPINNING...' : 'SPIN THE WHEEL'}</span>
+            <span className="relative z-10 drop-shadow-sm">
+              {isSpinning ? 'SPINNING...' : activeTask ? 'TASK ACTIVE' : 'SPIN THE WHEEL'}
+            </span>
           </button>
 
           {/* ---- Winner Modal ---- */}
@@ -444,6 +524,70 @@ function App() {
                           <Plus size={14} className="opacity-0 group-hover:opacity-100 text-osrs-gold transition-opacity" />
                         </button>
                       ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ---- History & Achievements Modal ---- */}
+          {showHistory && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowHistory(false)}>
+              <div className="bg-osrs-panel border-2 border-osrs-gold rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                <div className="p-4 border-b border-osrs-border bg-black/20 flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-osrs-gold flex items-center gap-2">
+                    <History size={20} /> History & Achievements
+                  </h2>
+                  <button onClick={() => setShowHistory(false)} className="text-osrs-accent hover:text-white transition-colors">
+                    <span className="sr-only">Close</span>
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6 thin-scrollbar">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {/* Achievements Column */}
+                    <div>
+                      <h3 className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2">
+                        <Trophy size={18} /> Unlocked Achievements
+                      </h3>
+                      <div className="space-y-3">
+                        {achievements.length === 0 && <p className="text-osrs-accent italic text-sm">No achievements unlocked yet.</p>}
+                        {achievements.map(ach => (
+                          <div key={ach.id} className="bg-osrs-bg border border-osrs-border p-3 rounded-lg flex items-center gap-3">
+                            <div className="bg-osrs-gold p-2 rounded-full text-osrs-panel">
+                              {ach.icon}
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-white text-sm">{ach.name}</h4>
+                              <p className="text-xs text-osrs-accent">{ach.description}</p>
+                              <p className="text-[10px] text-osrs-accent/50 mt-1">Unlocked: {new Date(ach.unlockedAt!).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* History Column */}
+                    <div>
+                      <h3 className="text-lg font-bold text-osrs-gold mb-4 flex items-center gap-2">
+                        <ScrollText size={18} /> Task History
+                      </h3>
+                      <div className="space-y-3">
+                        {completedTasks.length === 0 && <p className="text-osrs-accent italic text-sm">No tasks completed yet.</p>}
+                        {completedTasks.map((task, idx) => (
+                          <div key={idx} className="bg-osrs-bg/50 border border-osrs-border p-3 rounded-lg flex justify-between items-center">
+                            <div>
+                              <span className="font-bold text-gray-200 block">{task.name}</span>
+                              <span className="text-xs text-osrs-accent">{task.currentGoal} {task.metric}</span>
+                            </div>
+                            {task.multiplier > 1 && (
+                              <span className="text-xs font-bold text-red-400 bg-red-900/20 px-2 py-1 rounded">x{task.multiplier}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

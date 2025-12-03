@@ -15,7 +15,7 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
     const rotation = useMotionValue(0);
     const [lastRotation, setLastRotation] = useState(0);
 
-    const size = 400; // Wheel size in px
+    const size = 500; // Wheel size in px (matches container)
     const center = size / 2;
     const radius = size / 2 - 20; // bezel width
 
@@ -96,7 +96,6 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
     return (
         <div className="relative w-[500px] h-[500px] flex items-center justify-center perspective-1000">
             {/* Outer Bezel/Rim with 3D depth */}
-            {/* Outer Bezel/Rim with 3D depth */}
             <div className="absolute inset-0 rounded-full border-[16px] border-red-900/80 shadow-[0_0_50px_rgba(220,38,38,0.2),inset_0_0_20px_rgba(0,0,0,0.8)] z-10 pointer-events-none transform translate-z-10"></div>
 
             <motion.div
@@ -152,7 +151,6 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
                 </svg>
             </motion.div>
 
-            {/* Center Hub Cap (Static) */}
             {/* Center Hub Cap (Static) */}
             <div className="absolute w-16 h-16 bg-gradient-to-br from-red-900 to-black rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.8)] z-20 flex items-center justify-center border-4 border-red-950">
                 <div className="w-8 h-8 bg-red-950 rounded-full shadow-inner"></div>

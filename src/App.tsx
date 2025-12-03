@@ -170,6 +170,16 @@ function App() {
     if (name === "Zulrah") formatted = "Zulrah_(serpentine)";
     if (name === "Theatre of Blood") formatted = "Theatre_of_Blood_logo";
 
+    // Fixes for 404s
+    if (name === "Muttadiles") formatted = "Muttadile";
+    if (name === "Nylocas Vasilias") formatted = "Nylocas_Vasilias_(formless)"; // Common wiki image
+    if (name === "Thermonuclear Smoke Devil") formatted = "Thermonuclear_smoke_devil";
+    if (name === "Alchemical Hydra") formatted = "Alchemical_Hydra_(serpentine)";
+    if (name === "Deranged Archaeologist") formatted = "Deranged_archaeologist";
+    if (name === "Phosani's Nightmare") formatted = "Phosani's_Nightmare_(formless)"; // Likely variant
+    if (name === "Hueycoatl") formatted = "The_Hueycoatl";
+    if (name === "Phantom Muspah") formatted = "Phantom_Muspah_(ranged)";
+
     return `https://oldschool.runescape.wiki/images/${formatted}.png`;
   };
 

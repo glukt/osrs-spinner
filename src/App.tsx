@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Swords, RotateCw, Trophy, Star, Zap, CheckCircle, History, ScrollText } from 'lucide-react';
+import { Plus, Trash2, Swords, RotateCw, Trophy, Star, Zap, CheckCircle, History, ScrollText, X, Lock, Skull, Dices, Moon, Flame } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import WheelCanvas from './WheelCanvas';
 import { Task, MetricType, Achievement } from './types';
@@ -11,10 +11,15 @@ const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 // Achievement Definitions
 const ACHIEVEMENT_LIST = [
   { id: 'first_blood', name: 'First Blood', description: 'Complete your first task', icon: <Swords size={16} /> },
-  { id: 'streak_3', name: 'On Fire', description: 'Complete 3 tasks in a row', icon: <Star size={16} /> },
+  { id: 'streak_3', name: 'On Fire', description: 'Complete 3 tasks in a row', icon: <Flame size={16} /> },
   { id: 'streak_5', name: 'Unstoppable', description: 'Complete 5 tasks in a row', icon: <Trophy size={16} /> },
   { id: 'high_roller', name: 'High Roller', description: 'Double a task to 4x multiplier', icon: <RotateCw size={16} /> },
   { id: 'max_risk', name: 'Max Risk', description: 'Double a task to 8x multiplier', icon: <RotateCw size={16} color="red" /> },
+  { id: 'gambler', name: 'Gambler', description: 'Re-roll a task 5 times', icon: <Dices size={16} /> },
+  { id: 'slayer_master', name: 'Slayer Master', description: 'Complete 10 Slayer tasks', icon: <Skull size={16} /> },
+  { id: 'bossing_addict', name: 'Bossing Addict', description: 'Complete 5 Boss tasks in a row', icon: <Swords size={16} color="gold" /> },
+  { id: 'night_owl', name: 'Night Owl', description: 'Spin the wheel at night', icon: <Moon size={16} /> },
+  { id: 'risk_taker', name: 'Risk Taker', description: 'Accept a task with a high multiplier', icon: <Zap size={16} /> },
 ];
 
 const BOSSES = [
@@ -71,6 +76,7 @@ function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [isExitingSplash, setIsExitingSplash] = useState(false);
+  const [showAllAchievements, setShowAllAchievements] = useState(false);
 
   // Input States
   const [inputName, setInputName] = useState('');

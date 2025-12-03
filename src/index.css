@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #1e2124;
+  color: #ffffff;
+}
+
+/* Custom Scrollbar for the task list */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: #3c352d;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #5b4028;
+  border-radius: 4px;
+}

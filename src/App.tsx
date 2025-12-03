@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Trash2, Swords, RotateCw, Trophy, Star, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import WheelCanvas from './WheelCanvas';
@@ -471,3 +471,5 @@ function App() {
     </div>
   );
 }
+
+export default App;

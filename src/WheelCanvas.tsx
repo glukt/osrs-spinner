@@ -103,7 +103,7 @@ const WheelCanvas: React.FC<WheelCanvasProps> = ({ tasks, isSpinning, onSpinComp
             <motion.div
                 className="w-full h-full rounded-full overflow-hidden shadow-bezel relative z-10 border-8 border-osrs-panel"
                 animate={controls}
-                style={{ rotate: rotation }}
+                style={{ rotate: rotation, opacity: isSpinning ? 0.9 : 1 }}
             >
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
                     <g transform={`rotate(-90 ${center} ${center})`}> {/* Rotate -90 so slice 0 starts at top before spinning */}

@@ -13,6 +13,7 @@ const ACHIEVEMENT_LIST = [
   { id: 'first_blood', name: 'First Blood', description: 'Complete your first task', icon: <Swords size={16} /> },
   { id: 'streak_3', name: 'On Fire', description: 'Complete 3 tasks in a row', icon: <Flame size={16} /> },
   { id: 'streak_5', name: 'Unstoppable', description: 'Complete 5 tasks in a row', icon: <Trophy size={16} /> },
+  { id: 'streak_10', name: 'Godlike', description: 'Complete 10 tasks in a row', icon: <Zap size={16} color="cyan" /> },
   { id: 'high_roller', name: 'High Roller', description: 'Double a task to 4x multiplier', icon: <RotateCw size={16} /> },
   { id: 'max_risk', name: 'Max Risk', description: 'Double a task to 8x multiplier', icon: <RotateCw size={16} color="red" /> },
   { id: 'gambler', name: 'Gambler', description: 'Re-roll a task 5 times', icon: <Dices size={16} /> },
@@ -20,6 +21,21 @@ const ACHIEVEMENT_LIST = [
   { id: 'bossing_addict', name: 'Bossing Addict', description: 'Complete 5 Boss tasks in a row', icon: <Swords size={16} color="gold" /> },
   { id: 'night_owl', name: 'Night Owl', description: 'Spin the wheel at night', icon: <Moon size={16} /> },
   { id: 'risk_taker', name: 'Risk Taker', description: 'Accept a task with a high multiplier', icon: <Zap size={16} /> },
+
+  // Milestones
+  { id: 'novice', name: 'Novice', description: 'Complete 10 total tasks', icon: <Star size={16} color="#cd7f32" /> },
+  { id: 'adept', name: 'Adept', description: 'Complete 25 total tasks', icon: <Star size={16} color="#c0c0c0" /> },
+  { id: 'expert', name: 'Expert', description: 'Complete 50 total tasks', icon: <Star size={16} color="#ffd700" /> },
+  { id: 'legend', name: 'Legend', description: 'Complete 100 total tasks', icon: <Star size={16} color="#e5e4e2" /> },
+
+  // Content Specific
+  { id: 'raider', name: 'Raider', description: 'Complete a Raid task', icon: <Swords size={16} color="purple" /> },
+  { id: 'wildy_survivor', name: 'Wildy Survivor', description: 'Complete a Wilderness boss task', icon: <Skull size={16} color="red" /> },
+  { id: 'dragon_slayer', name: 'Dragon Slayer', description: 'Defeat a Dragon boss (Vorkath, Galvek, KBD, etc.)', icon: <Flame size={16} color="orange" /> },
+  { id: 'god_wars', name: 'General', description: 'Defeat a God Wars Dungeon boss', icon: <Swords size={16} color="cyan" /> },
+  { id: 'skiller', name: 'Skiller', description: 'Complete a Skilling task', icon: <Zap size={16} color="green" /> },
+  { id: 'maxing', name: 'Maxing', description: 'Complete 10 Skilling tasks', icon: <Trophy size={16} color="green" /> },
+  { id: 'dt2_master', name: 'Awakened', description: 'Defeat a Desert Treasure 2 boss', icon: <Moon size={16} color="purple" /> },
 ];
 
 const BOSSES = [
@@ -301,16 +317,68 @@ function App() {
     setShowWinModal(false);
   }
 
+  const resetAchievements = () => {
+    if (confirm("Are you sure you want to reset ALL achievement progress? This cannot be undone.")) {
+      setAchievements([]);
+      localStorage.removeItem('osrs-spinner-achievements');
+      // Optional: Reset streak too?
+      // setStreak(0); 
+    }
+  };
+
   const handleCompleteActiveTask = () => {
     if (!activeTask) return;
 
     // Achievement Checks
     const newStreak = streak + 1;
     setStreak(newStreak);
+    const totalCompleted = completedTasks.length + 1;
 
     unlockAchievement('first_blood');
     if (newStreak >= 3) unlockAchievement('streak_3');
     if (newStreak >= 5) unlockAchievement('streak_5');
+    if (newStreak >= 10) unlockAchievement('streak_10');
+
+    // Milestones
+    if (totalCompleted >= 10) unlockAchievement('novice');
+    if (totalCompleted >= 25) unlockAchievement('adept');
+    if (totalCompleted >= 50) unlockAchievement('expert');
+    if (totalCompleted >= 100) unlockAchievement('legend');
+
+    // Content Specific
+    const name = activeTask.name;
+
+    // Raids
+    if (["Chambers of Xeric", "Theatre of Blood", "Tombs of Amascut", "Great Olm", "Verzik Vitur", "Tumeken's Warden"].some(r => name.includes(r))) {
+      unlockAchievement('raider');
+    }
+
+    // Wilderness
+    if (["Chaos Elemental", "King Black Dragon", "Scorpia", "Venenatis", "Vet'ion", "Callisto", "Chaos Fanatic", "Crazy Archaeologist", "Spindel", "Artio", "Calvar'ion"].includes(name)) {
+      unlockAchievement('wildy_survivor');
+    }
+
+    // Dragon Slayer
+    if (["Vorkath", "Galvek", "King Black Dragon", "Great Olm"].includes(name)) {
+      unlockAchievement('dragon_slayer');
+    }
+
+    // GWD
+    if (["Commander Zilyana", "General Graardor", "Kree'arra", "K'ril Tsutsaroth", "Nex"].includes(name)) {
+      unlockAchievement('god_wars');
+    }
+
+    // DT2
+    if (["Duke Sucellus", "The Leviathan", "The Whisperer", "Vardorvis"].includes(name)) {
+      unlockAchievement('dt2_master');
+    }
+
+    // Skilling
+    if (SKILLS.includes(name)) {
+      unlockAchievement('skiller');
+      const skillTasks = completedTasks.filter(t => SKILLS.includes(t.name)).length + 1;
+      if (skillTasks >= 10) unlockAchievement('maxing');
+    }
 
     // Add to history
     setCompletedTasks(prev => [activeTask, ...prev]);
@@ -842,6 +910,17 @@ function App() {
                         </div>
                       );
                     })}
+                  </div>
+                  <div className="p-4 border-t border-osrs-border bg-black/20 flex justify-between items-center">
+                    <div className="text-sm text-osrs-accent">
+                      <span className="text-osrs-gold font-bold">{achievements.length}</span> / {ACHIEVEMENT_LIST.length} Unlocked
+                    </div>
+                    <button
+                      onClick={resetAchievements}
+                      className="text-xs text-red-500 hover:text-red-400 hover:bg-red-900/20 px-3 py-2 rounded transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 size={14} /> Reset Progress
+                    </button>
                   </div>
                 </div>
               </div>
